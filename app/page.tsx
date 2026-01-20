@@ -299,7 +299,7 @@ export default function Home() {
                 fontSize: 12,
                 padding: "8px 12px",
               }}
-              formatter={(value: number) => [`${value} tasks`, "Completed"]}
+              formatter={(value) => [`${value ?? 0} tasks`, "Completed"]}
             />
             <Area
               isAnimationActive={true}
