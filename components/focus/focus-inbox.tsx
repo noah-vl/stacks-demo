@@ -61,7 +61,7 @@ export function FocusInbox() {
             )}
           </Button>
         </SheetTrigger>
-        <SheetContent className="w-[360px] sm:max-w-[360px] p-0 flex flex-col">
+        <SheetContent className="w-[400px] sm:max-w-[400px] p-0 flex flex-col overflow-visible">
           <SheetHeader className="px-5 py-4 border-b border-neutral-100">
             <SheetTitle className="text-base font-medium text-neutral-900">
               Focus Inbox

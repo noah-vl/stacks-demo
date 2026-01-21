@@ -1,12 +1,12 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   CalendarRange,
   CheckSquare,
-  ChevronDown,
+  ChevronsUpDown,
   ChevronRight,
   FileText,
   Grid3X3,
@@ -57,7 +57,7 @@ export function Sidebar({ activePage = "overview" }: SidebarProps) {
             <div className="h-8 w-8 rounded-full bg-linear-to-br from-amber-600 to-amber-800" />
             <span className="text-sm font-medium text-neutral-900">Stacks Worldwide</span>
           </div>
-          <ChevronDown className="h-4 w-4 text-neutral-400" />
+          <ChevronsUpDown className="h-4 w-4 text-neutral-400" />
         </Button>
       </div>
 
@@ -70,8 +70,8 @@ export function Sidebar({ activePage = "overview" }: SidebarProps) {
           variant="outline"
           className="mb-3 w-full justify-between border-neutral-200 bg-white px-3 py-2 text-sm font-normal text-neutral-700 shadow-none hover:bg-neutral-50"
         >
-          June 2025
-          <ChevronDown className="h-4 w-4 text-neutral-400" />
+          January 2026
+          <ChevronsUpDown className="h-4 w-4 text-neutral-400" />
         </Button>
 
         {/* Navigation Items */}
@@ -115,36 +115,48 @@ export function Sidebar({ activePage = "overview" }: SidebarProps) {
           <NavItem
             icon={<Inbox className="h-4 w-4" />}
             label="Accounts Receivable"
+            href="/accounts-receivable"
           />
           <NavItem
             icon={<Grid3X3 className="h-4 w-4" />}
             label="Transaction Matching"
+            href="/transaction-matching"
           />
         </nav>
 
         {/* Settings */}
         <div className="mt-4">
-          <Button
-            variant="ghost"
-            className="w-full justify-between px-3 py-2 text-sm font-normal text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
-          >
-            <div className="flex items-center gap-3">
-              <Settings className="h-4 w-4 text-neutral-500" />
-              Settings
-            </div>
-            <ChevronRight className="h-4 w-4 text-neutral-400" />
-          </Button>
+          <a href="/settings">
+            <Button
+              variant="ghost"
+              className="w-full justify-between px-3 py-2 text-sm font-normal text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="h-4 w-4 text-neutral-500" />
+                Settings
+              </div>
+              <ChevronRight className="h-4 w-4 text-neutral-400" />
+            </Button>
+          </a>
         </div>
       </div>
 
+      {/* Disclaimer */}
+      <div className="mt-auto px-3 py-3">
+        <p className="px-3 text-[11px] text-orange-500 leading-tight">
+          This is a recreation of the Stacks dashboard for demo purposes. No official affiliation with Stacks.
+        </p>
+      </div>
+
       {/* User Profile */}
-      <div className="mt-auto border-t border-neutral-200 p-3">
+      <div className="border-t border-neutral-200 p-3">
         <Button
           variant="ghost"
           className="w-full justify-between px-3 py-2 h-auto hover:bg-neutral-50"
         >
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
+              <AvatarImage src="/people/noah-pf.png" alt="Noah van Lienden" />
               <AvatarFallback className="bg-neutral-100 text-neutral-600 text-[11px] font-medium">
                 NV
               </AvatarFallback>

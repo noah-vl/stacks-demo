@@ -1,11 +1,39 @@
 "use client"
 
-import { ChevronRight, Circle } from "lucide-react"
+import { ChevronRight, Circle, AlertCircle, Clock, GitBranch } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Bottleneck } from "@/lib/focus-helpers"
 import { getUserById, entities } from "@/lib/focus-data"
 import { cn } from "@/lib/utils"
+
+const reasonTypeConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  data: { 
+    label: "Missing data", 
+    color: "text-neutral-600 bg-neutral-100", 
+    icon: <AlertCircle className="h-3 w-3" /> 
+  },
+  approval: { 
+    label: "Pending approval", 
+    color: "text-neutral-600 bg-neutral-100", 
+    icon: <Clock className="h-3 w-3" /> 
+  },
+  dependency: { 
+    label: "Blocked by dependency", 
+    color: "text-neutral-600 bg-neutral-100", 
+    icon: <GitBranch className="h-3 w-3" /> 
+  },
+  exception: { 
+    label: "Exception", 
+    color: "text-neutral-600 bg-neutral-100", 
+    icon: <AlertCircle className="h-3 w-3" /> 
+  },
+  overdue: { 
+    label: "Overdue", 
+    color: "text-red-600 bg-red-50", 
+    icon: <Clock className="h-3 w-3" /> 
+  },
+}
 
 interface BottleneckListProps {
   bottlenecks: Bottleneck[]
@@ -52,13 +80,15 @@ export function BottleneckList({ bottlenecks, onSelectBottleneck }: BottleneckLi
               {/* Status indicator */}
               <div className="shrink-0">
                 {isBlocked ? (
-                  <div className="h-4 w-4 rounded-full bg-red-500" />
+                  <div className="h-4 w-4 rounded-full border-[1.5px] border-red-500 bg-white flex items-center justify-center">
+                    <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                  </div>
                 ) : isOverdue ? (
-                  <div className="h-4 w-4 rounded-full border-2 border-amber-400 flex items-center justify-center">
-                    <div className="h-2 w-2 rounded-full bg-amber-400" />
+                  <div className="h-4 w-4 rounded-full border-[1.5px] border-amber-400 bg-white flex items-center justify-center">
+                    <div className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                   </div>
                 ) : (
-                  <Circle className="h-4 w-4 text-neutral-300" strokeWidth={2} />
+                  <div className="h-4 w-4 rounded-full border-[1.5px] border-neutral-300 bg-white" />
                 )}
               </div>
               
@@ -74,15 +104,13 @@ export function BottleneckList({ bottlenecks, onSelectBottleneck }: BottleneckLi
                 </div>
               </div>
               
-              {/* Entity */}
-              <Badge className={cn("shrink-0 border-0 px-2 py-0.5 text-[11px] font-medium", entity.color)}>
-                {entity.code}
-              </Badge>
-              
-              {/* Time impact */}
-              <span className="text-xs text-neutral-500 tabular-nums shrink-0 w-12 text-right">
-                {bottleneck.timeImpact}h
-              </span>
+              {/* Entity - matching main dashboard style */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className={cn("h-2 w-2 rounded-full", entity.dotColor)} />
+                <span className="inline-flex items-center rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
+                  {entity.code}
+                </span>
+              </div>
               
               {/* Owner */}
               {owner && (
@@ -126,7 +154,26 @@ export function BottleneckListCompact({
       {displayedBottlenecks.map((bottleneck) => {
         const { task } = bottleneck
         const owner = getUserById(task.ownerId)
+        const entity = entities[task.entity]
+        const reasonConfig = reasonTypeConfig[bottleneck.reasonType] || reasonTypeConfig.dependency
         const isBlocked = task.status === "blocked"
+        
+        // Calculate days until due
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const dueDate = new Date(task.dueDate)
+        dueDate.setHours(0, 0, 0, 0)
+        const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+        const isOverdue = daysUntilDue < 0
+        
+        // Format due date display
+        const formatDueDate = () => {
+          if (daysUntilDue === 0) return "Due today"
+          if (daysUntilDue === 1) return "Due tomorrow"
+          if (daysUntilDue === -1) return "1d overdue"
+          if (daysUntilDue < 0) return `${Math.abs(daysUntilDue)}d overdue`
+          return `${daysUntilDue}d left`
+        }
         
         return (
           <button
@@ -134,28 +181,63 @@ export function BottleneckListCompact({
             onClick={() => onSelectBottleneck(bottleneck)}
             className="w-full text-left group"
           >
-            <div className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors">
+            <div className="flex items-start gap-3 pl-4 pr-5 py-3 hover:bg-neutral-50 transition-colors">
               {/* Status dot */}
               <div className={cn(
-                "h-2 w-2 rounded-full shrink-0",
-                isBlocked ? "bg-red-500" : "bg-amber-500"
-              )} />
+                "h-2.5 w-2.5 rounded-full shrink-0 border mt-1",
+                isBlocked 
+                  ? "border-red-500 bg-white flex items-center justify-center" 
+                  : "border-amber-500 bg-white flex items-center justify-center"
+              )}>
+                <div className={cn(
+                  "h-1 w-1 rounded-full",
+                  isBlocked ? "bg-red-500" : "bg-amber-500"
+                )} />
+              </div>
               
               {/* Content */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 space-y-1.5">
                 <p className="text-sm text-neutral-900 truncate group-hover:text-neutral-700">
                   {task.title}
                 </p>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  {task.entity} · {bottleneck.timeImpact}h impact
-                </p>
+                
+                {/* Badges row */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {/* Entity badge - colored dot + neutral pill */}
+                  <div className="flex items-center gap-1 rounded-full bg-neutral-100 pl-1.5 pr-2 py-0.5">
+                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", entity.dotColor)} />
+                    <span className="text-[10px] font-medium text-neutral-600 uppercase tracking-wide">
+                      {entity.code}
+                    </span>
+                  </div>
+                  
+                  {/* Reason tag */}
+                  <span className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    reasonConfig.color
+                  )}>
+                    {reasonConfig.icon}
+                    {reasonConfig.label}
+                  </span>
+                  
+                  {/* Due date badge */}
+                  <span className={cn(
+                    "inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] tabular-nums",
+                    isOverdue 
+                      ? "border-red-200 text-red-600 bg-red-50" 
+                      : "border-neutral-200 text-neutral-500"
+                  )}>
+                    <Clock className="h-2.5 w-2.5" />
+                    {formatDueDate()}
+                  </span>
+                </div>
               </div>
               
               {/* Owner avatar */}
               {owner && (
-                <Avatar className="h-5 w-5 shrink-0">
+                <Avatar className="h-6 w-6 shrink-0">
                   {owner.avatar && <AvatarImage src={owner.avatar} alt={owner.name} />}
-                  <AvatarFallback className={cn("text-[8px] font-medium text-white", owner.color)}>
+                  <AvatarFallback className={cn("text-[9px] font-medium text-white", owner.color)}>
                     {owner.initials}
                   </AvatarFallback>
                 </Avatar>

@@ -53,14 +53,16 @@ export const users: User[] = [
     id: "u2",
     name: "Albert Malikov",
     role: "Preparer",
+    avatar: "/people/albert.jpeg",
     initials: "AM",
     color: "bg-teal-500",
   },
   {
     id: "u3",
-    name: "Ivan Bovyrin",
+    name: "Noah van Lienden",
     role: "Preparer",
-    initials: "IB",
+    avatar: "/people/noah-pf.png",
+    initials: "NL",
     color: "bg-purple-500",
   },
   {
@@ -85,6 +87,14 @@ export const users: User[] = [
     initials: "IZ",
     color: "bg-indigo-500",
   },
+  {
+    id: "u7",
+    name: "Naman Mathur",
+    role: "Preparer",
+    avatar: "/people/naman.jpeg",
+    initials: "NG",
+    color: "bg-rose-500",
+  },
 ]
 
 // Tasks data
@@ -108,7 +118,7 @@ export const tasks: Task[] = [
     title: "Reconcile - HSBC EUR Operations *0298",
     category: "Bank Reconciliation",
     ownerId: "u2",
-    reviewerId: "u1",
+    reviewerId: "u3", // Noah is the reviewer
     status: "blocked",
     dueDate: "2026-01-21",
     estimatedHours: 3,
@@ -120,8 +130,8 @@ export const tasks: Task[] = [
     id: "t3",
     title: "Post month-end accruals",
     category: "Journal Entries",
-    ownerId: "u5",
-    reviewerId: "u4",
+    ownerId: "u7",
+    reviewerId: "u3",
     status: "in_progress",
     dueDate: "2026-01-23",
     estimatedHours: 6,
@@ -132,7 +142,7 @@ export const tasks: Task[] = [
     id: "t4",
     title: "Flux analysis - P&L consolidated",
     category: "Flux Analysis",
-    ownerId: "u1",
+    ownerId: "u3",
     status: "todo",
     dueDate: "2026-01-24",
     estimatedHours: 8,
@@ -143,8 +153,8 @@ export const tasks: Task[] = [
     id: "t5",
     title: "Review intercompany eliminations",
     category: "Consolidation",
-    ownerId: "u6",
-    reviewerId: "u1",
+    ownerId: "u2",
+    reviewerId: "u3",
     status: "in_progress",
     dueDate: "2026-01-24",
     estimatedHours: 5,
@@ -155,7 +165,8 @@ export const tasks: Task[] = [
     id: "t6",
     title: "Prepare board reporting package",
     category: "Financial Reporting",
-    ownerId: "u1",
+    ownerId: "u7",
+    reviewerId: "u3",
     status: "todo",
     dueDate: "2026-01-25",
     estimatedHours: 10,
@@ -168,7 +179,7 @@ export const tasks: Task[] = [
     title: "Reconcile - Barclays EUR Cash *7605",
     category: "Bank Reconciliation",
     ownerId: "u2",
-    reviewerId: "u1",
+    reviewerId: "u3", // Noah is the reviewer
     status: "blocked",
     dueDate: "2026-01-21",
     estimatedHours: 2,
@@ -235,6 +246,31 @@ export const tasks: Task[] = [
     lastUpdated: "2026-01-20T09:00:00Z",
     entity: "HOLDCO",
   },
+  // Tasks waiting for review (current user is reviewer)
+  {
+    id: "t13",
+    title: "Post payroll and benefits from payroll system",
+    category: "Journal Entries",
+    ownerId: "u3", // Noah van Lienden - preparer
+    reviewerId: "u1", // Koen Bentvelsen - reviewer (current user)
+    status: "in_progress", // Submitted, waiting for review
+    dueDate: "2026-01-21",
+    estimatedHours: 2,
+    lastUpdated: "2026-01-21T14:30:00Z",
+    entity: "NL",
+  },
+  {
+    id: "t14",
+    title: "Reconcile - Rabobank Operating Account *4521",
+    category: "Bank Reconciliation",
+    ownerId: "u2", // Albert Malikov - preparer
+    reviewerId: "u3", // Noah van Lienden - reviewer (current user)
+    status: "in_progress", // Submitted, waiting for review
+    dueDate: "2026-01-21",
+    estimatedHours: 3,
+    lastUpdated: "2026-01-21T10:15:00Z",
+    entity: "NL",
+  },
 ]
 
 // Dependencies (fromTaskId must be completed before toTaskId can proceed)
@@ -285,13 +321,13 @@ export const bottleneckEvents: BottleneckEvent[] = [
   },
 ]
 
-// Entity display names
-export const entities: Record<string, { code: string; name: string; color: string }> = {
-  NL: { code: "NL", name: "Stacks BV", color: "bg-neutral-100 text-neutral-700" },
-  UK: { code: "UK", name: "Stacks Ltd", color: "bg-neutral-800 text-white" },
-  US: { code: "US", name: "Stacks Inc", color: "bg-emerald-600 text-white" },
-  DE: { code: "DE", name: "Stacks GmbH", color: "bg-blue-600 text-white" },
-  HOLDCO: { code: "HOLDCO", name: "Stacks Worldwide", color: "bg-amber-500 text-white" },
+// Entity display names - using dot colors to match main dashboard
+export const entities: Record<string, { code: string; name: string; dotColor: string }> = {
+  NL: { code: "NL", name: "Stacks BV", dotColor: "bg-orange-500" },
+  UK: { code: "UK", name: "Stacks Ltd", dotColor: "bg-neutral-800" },
+  US: { code: "US", name: "Stacks Inc", dotColor: "bg-emerald-500" },
+  DE: { code: "DE", name: "Stacks GmbH", dotColor: "bg-blue-500" },
+  HOLDCO: { code: "HOLDCO", name: "Stacks Worldwide", dotColor: "bg-amber-400" },
 }
 
 // Category icons (for reference)
@@ -305,6 +341,9 @@ export const categories = [
   "Tax Reconciliation",
 ]
 
+// Current user (would come from auth in real app)
+export const currentUserId = "u3" // Noah van Lienden - Preparer
+
 // Helper to get user by ID
 export function getUserById(id: string): User | undefined {
   return users.find((u) => u.id === id)
@@ -313,4 +352,29 @@ export function getUserById(id: string): User | undefined {
 // Helper to get task by ID
 export function getTaskById(id: string): Task | undefined {
   return tasks.find((t) => t.id === id)
+}
+
+// Helper to get current user
+export function getCurrentUser(): User | undefined {
+  return getUserById(currentUserId)
+}
+
+// Helper to check if current user is reviewer for a task
+export function isCurrentUserReviewer(task: Task): boolean {
+  return task.reviewerId === currentUserId
+}
+
+// Helper to check if current user is preparer for a task
+export function isCurrentUserPreparer(task: Task): boolean {
+  return task.ownerId === currentUserId
+}
+
+// Helper to check if a user is involved in a task (as preparer or reviewer)
+export function isUserInvolvedInTask(task: Task, userId: string): boolean {
+  return task.ownerId === userId || task.reviewerId === userId
+}
+
+// Helper to check if current user is involved in a task (as preparer or reviewer)
+export function isCurrentUserInvolved(task: Task): boolean {
+  return isUserInvolvedInTask(task, currentUserId)
 }

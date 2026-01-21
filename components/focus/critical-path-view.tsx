@@ -83,21 +83,23 @@ export function CriticalPathView({ criticalPath, onSelectNode }: CriticalPathVie
                   {/* Status dot */}
                   <div className="relative z-10 shrink-0 mt-1">
                     {isDone ? (
-                      <div className="h-3.5 w-3.5 rounded-full bg-[#342D87] flex items-center justify-center">
-                        <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                      <div className="h-3.5 w-3.5 rounded-full bg-emerald-500 flex items-center justify-center">
+                        <Check className="h-2 w-2 text-white" strokeWidth={3} />
                       </div>
                     ) : isBlocked ? (
-                      <div className="h-3.5 w-3.5 rounded-full bg-red-500" />
+                      <div className="h-3.5 w-3.5 rounded-full border-[1.5px] border-red-500 bg-white flex items-center justify-center">
+                        <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                      </div>
                     ) : isOverdue ? (
-                      <div className="h-3.5 w-3.5 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center">
+                      <div className="h-3.5 w-3.5 rounded-full border-[1.5px] border-amber-400 bg-white flex items-center justify-center">
                         <div className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                       </div>
                     ) : isInProgress ? (
-                      <div className="h-3.5 w-3.5 rounded-full border-2 border-[#342D87] bg-white flex items-center justify-center">
+                      <div className="h-3.5 w-3.5 rounded-full border-[1.5px] border-[#342D87] bg-white flex items-center justify-center">
                         <div className="h-1.5 w-1.5 rounded-full bg-[#342D87]" />
                       </div>
                     ) : (
-                      <div className="h-3.5 w-3.5 rounded-full border-2 border-neutral-300 bg-white" />
+                      <div className="h-3.5 w-3.5 rounded-full border-[1.5px] border-neutral-300 bg-white" />
                     )}
                   </div>
                   
@@ -110,12 +112,19 @@ export function CriticalPathView({ criticalPath, onSelectNode }: CriticalPathVie
                       {task.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1 text-xs text-neutral-500">
-                      <span className={cn(
-                        "px-1.5 py-0.5 rounded text-[10px] font-medium",
-                        isDone ? "bg-neutral-100 text-neutral-400" : entity.color
-                      )}>
-                        {entity.code}
-                      </span>
+                      {/* Entity - matching main dashboard style */}
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn(
+                          "h-2 w-2 rounded-full shrink-0",
+                          isDone ? "bg-neutral-300" : entity.dotColor
+                        )} />
+                        <span className={cn(
+                          "inline-flex items-center rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                          isDone ? "text-neutral-400" : "text-neutral-500"
+                        )}>
+                          {entity.code}
+                        </span>
+                      </div>
                       <span className={cn(isOverdue && !isDone && "text-red-600")}>
                         {formatDate(task.dueDate)}
                       </span>

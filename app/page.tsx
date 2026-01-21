@@ -19,59 +19,59 @@ import { Navbar, PageHeader } from "@/components/navbar"
 // Chart data for each category
 const chartDataByCategory: Record<string, { date: string; value: number }[]> = {
   "All tasks": [
-    { date: "Sep 16", value: 10 },
-    { date: "Sep 21", value: 25 },
-    { date: "Sep 28", value: 35 },
-    { date: "Oct 1", value: 45 },
-    { date: "Oct 5", value: 55 },
-    { date: "Oct 10", value: 70 },
-    { date: "Oct 15", value: 82 },
-    { date: "Oct 20", value: 88 },
-    { date: "Oct 25", value: 90 },
+    { date: "Jan 1", value: 10 },
+    { date: "Jan 5", value: 25 },
+    { date: "Jan 8", value: 35 },
+    { date: "Jan 10", value: 45 },
+    { date: "Jan 12", value: 55 },
+    { date: "Jan 15", value: 70 },
+    { date: "Jan 17", value: 82 },
+    { date: "Jan 19", value: 88 },
+    { date: "Jan 20", value: 90 },
   ],
   "Journal entries": [
-    { date: "Sep 16", value: 5 },
-    { date: "Sep 21", value: 12 },
-    { date: "Sep 28", value: 20 },
-    { date: "Oct 1", value: 28 },
-    { date: "Oct 5", value: 35 },
-    { date: "Oct 10", value: 40 },
-    { date: "Oct 15", value: 44 },
-    { date: "Oct 20", value: 45 },
-    { date: "Oct 25", value: 46 },
+    { date: "Jan 1", value: 5 },
+    { date: "Jan 5", value: 12 },
+    { date: "Jan 8", value: 20 },
+    { date: "Jan 10", value: 28 },
+    { date: "Jan 12", value: 35 },
+    { date: "Jan 15", value: 40 },
+    { date: "Jan 17", value: 44 },
+    { date: "Jan 19", value: 45 },
+    { date: "Jan 20", value: 46 },
   ],
   "Account reconciliations": [
-    { date: "Sep 16", value: 3 },
-    { date: "Sep 21", value: 8 },
-    { date: "Sep 28", value: 12 },
-    { date: "Oct 1", value: 15 },
-    { date: "Oct 5", value: 18 },
-    { date: "Oct 10", value: 24 },
-    { date: "Oct 15", value: 30 },
-    { date: "Oct 20", value: 33 },
-    { date: "Oct 25", value: 35 },
+    { date: "Jan 1", value: 3 },
+    { date: "Jan 5", value: 8 },
+    { date: "Jan 8", value: 12 },
+    { date: "Jan 10", value: 15 },
+    { date: "Jan 12", value: 18 },
+    { date: "Jan 15", value: 24 },
+    { date: "Jan 17", value: 30 },
+    { date: "Jan 19", value: 33 },
+    { date: "Jan 20", value: 35 },
   ],
   "Flux analysis reports": [
-    { date: "Sep 16", value: 0 },
-    { date: "Sep 21", value: 0 },
-    { date: "Sep 28", value: 0 },
-    { date: "Oct 1", value: 0 },
-    { date: "Oct 5", value: 0 },
-    { date: "Oct 10", value: 1 },
-    { date: "Oct 15", value: 1 },
-    { date: "Oct 20", value: 1 },
-    { date: "Oct 25", value: 1 },
+    { date: "Jan 1", value: 0 },
+    { date: "Jan 5", value: 0 },
+    { date: "Jan 8", value: 0 },
+    { date: "Jan 10", value: 0 },
+    { date: "Jan 12", value: 0 },
+    { date: "Jan 15", value: 1 },
+    { date: "Jan 17", value: 1 },
+    { date: "Jan 19", value: 1 },
+    { date: "Jan 20", value: 1 },
   ],
   "Other": [
-    { date: "Sep 16", value: 2 },
-    { date: "Sep 21", value: 5 },
-    { date: "Sep 28", value: 3 },
-    { date: "Oct 1", value: 2 },
-    { date: "Oct 5", value: 2 },
-    { date: "Oct 10", value: 5 },
-    { date: "Oct 15", value: 7 },
-    { date: "Oct 20", value: 9 },
-    { date: "Oct 25", value: 8 },
+    { date: "Jan 1", value: 2 },
+    { date: "Jan 5", value: 5 },
+    { date: "Jan 8", value: 3 },
+    { date: "Jan 10", value: 2 },
+    { date: "Jan 12", value: 2 },
+    { date: "Jan 15", value: 5 },
+    { date: "Jan 17", value: 7 },
+    { date: "Jan 19", value: 9 },
+    { date: "Jan 20", value: 8 },
   ],
 }
 
@@ -141,11 +141,11 @@ const categoryProgress = [
 ]
 
 const preparerProgress = [
-  { name: "Albert Malikov", initials: "AM", value: "4/4", color: "bg-teal-500", textColor: "text-white" },
+  { name: "Naman Mathur", value: "5/5", color: "bg-rose-500", textColor: "text-white", image: "/people/naman.jpeg" },
+  { name: "Albert Malikov", value: "4/4", color: "bg-teal-500", textColor: "text-white", image: "/people/albert.jpeg" },
   { name: "Koen Bentvelsen", value: "3/3", color: "bg-neutral-200", textColor: "text-neutral-700", image: "/avatars/koen.jpg" },
-  { name: "Jacob O'Connor", initials: "J", value: "2/2", color: "bg-orange-500", textColor: "text-white" },
+  { name: "Noah van Lienden", value: "2/2", color: "bg-orange-500", textColor: "text-white", image: "/people/noah-pf.png" },
   { name: "Kyle Kinsey", value: "1/1", color: "bg-neutral-300", textColor: "text-neutral-700", image: "/avatars/kyle.jpg" },
-  { name: "Ilia Znamenskii", initials: "IZ", value: "1/1", color: "bg-indigo-500", textColor: "text-white" },
 ]
 
 const statCards = [
@@ -157,7 +157,7 @@ const statCards = [
 ]
 
 // This would typically come from your app state/context
-const currentMonth = "June 2025"
+const currentMonth = "January 2026"
 const currentStatus = { label: "Open", variant: "open" as const }
 
 export default function Home() {
@@ -168,7 +168,7 @@ export default function Home() {
   const currentProgressBar = progressBarByCategory[selectedCategory]
   
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex h-screen overflow-hidden bg-white">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden border-l border-neutral-200">
         {/* Top Navbar */}

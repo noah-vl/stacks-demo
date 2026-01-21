@@ -46,7 +46,7 @@ export function Navbar({ breadcrumbs, title, status, action, showFocusInbox = tr
                   {item.label}
                 </a>
               ) : (
-                <span className="flex items-center gap-1">
+                <span className={`flex items-center gap-1 ${item.hasDropdown ? 'font-medium text-neutral-700' : ''}`}>
                   {item.label}
                   {item.hasDropdown && (
                     <ChevronDown className="h-3.5 w-3.5" />

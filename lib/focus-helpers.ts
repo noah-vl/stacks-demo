@@ -430,13 +430,17 @@ export function buildEscalationMessage(bottleneck: Bottleneck): string {
 export function filterBottlenecks(
   bottlenecks: Bottleneck[],
   filters: {
-    ownerId?: string
+    ownerId?: string // Filter by owner or reviewer (user involvement)
     category?: string
     entity?: string
   }
 ): Bottleneck[] {
   return bottlenecks.filter((b) => {
-    if (filters.ownerId && b.task.ownerId !== filters.ownerId) return false
+    // Check if user is involved (either as owner/preparer or reviewer)
+    if (filters.ownerId) {
+      const isInvolved = b.task.ownerId === filters.ownerId || b.task.reviewerId === filters.ownerId
+      if (!isInvolved) return false
+    }
     if (filters.category && b.task.category !== filters.category) return false
     if (filters.entity && b.task.entity !== filters.entity) return false
     return true
@@ -447,7 +451,7 @@ export function filterBottlenecks(
 export function filterCriticalPath(
   path: CriticalPathNode[],
   filters: {
-    ownerId?: string
+    ownerId?: string // Filter by owner or reviewer (user involvement)
     category?: string
     entity?: string
   }
@@ -457,7 +461,11 @@ export function filterCriticalPath(
   }
   
   return path.filter((n) => {
-    if (filters.ownerId && n.task.ownerId !== filters.ownerId) return false
+    // Check if user is involved (either as owner/preparer or reviewer)
+    if (filters.ownerId) {
+      const isInvolved = n.task.ownerId === filters.ownerId || n.task.reviewerId === filters.ownerId
+      if (!isInvolved) return false
+    }
     if (filters.category && n.task.category !== filters.category) return false
     if (filters.entity && n.task.entity !== filters.entity) return false
     return true

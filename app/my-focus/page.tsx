@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { motion } from "framer-motion"
 import { 
   User, 
   Building2, 
   Tag, 
   ChevronDown,
-  X
+  X,
+  SlidersHorizontal
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -19,14 +21,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sidebar } from "@/components/sidebar"
 import { Navbar } from "@/components/navbar"
-import { FocusKPICards } from "@/components/focus/focus-kpi-cards"
-import { BottleneckList } from "@/components/focus/bottleneck-list"
-import { CriticalPathView } from "@/components/focus/critical-path-view"
+import { EnhancedBottleneckList } from "@/components/focus/enhanced-bottleneck-list"
+import { EnhancedCriticalPath } from "@/components/focus/enhanced-critical-path"
 import { RightDrawer } from "@/components/focus/right-drawer"
 import { 
   computeBottlenecks, 
   computeCriticalPath, 
-  computeFocusMetrics,
   filterBottlenecks,
   filterCriticalPath,
   Bottleneck,
@@ -51,7 +51,6 @@ export default function MyFocusPage() {
   // Compute data
   const bottlenecks = useMemo(() => computeBottlenecks(allTasks, dependencies), [])
   const criticalPath = useMemo(() => computeCriticalPath(allTasks, dependencies), [])
-  const metrics = useMemo(() => computeFocusMetrics(allTasks, dependencies), [])
   
   // Apply filters
   const filteredBottlenecks = useMemo(() => {
@@ -109,14 +108,15 @@ export default function MyFocusPage() {
   }
   
   const hasActiveFilters = ownerFilter || categoryFilter || entityFilter
+  const activeFilterCount = [ownerFilter, categoryFilter, entityFilter].filter(Boolean).length
   
   // Get unique entities from tasks
   const uniqueEntities = Array.from(new Set(allTasks.map((t) => t.entity)))
   
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex h-screen overflow-hidden bg-neutral-50/50">
       <Sidebar activePage="my-focus" />
-      <div className="flex flex-1 flex-col overflow-hidden border-l border-neutral-200">
+      <div className="flex flex-1 flex-col overflow-hidden border-l border-neutral-200 bg-white">
         {/* Top Navbar */}
         <Navbar
           breadcrumbs={[
@@ -128,159 +128,184 @@ export default function MyFocusPage() {
         
         {/* Main Content */}
         <main className="flex-1 overflow-auto">
-          <div className="mx-auto w-full max-w-5xl px-6 py-6 lg:px-8">
+          <div className="mx-auto w-full max-w-6xl px-6 py-8 lg:px-8">
             {/* Page Header */}
-            <div className="mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
               <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">My Focus</h1>
-              <p className="text-sm text-neutral-500 mt-1">Bottlenecks and critical path for this close</p>
-            </div>
-            
-            {/* KPI Cards */}
-            <div className="mb-8">
-              <FocusKPICards metrics={metrics} />
-            </div>
+              <p className="text-sm text-neutral-500 mt-1">
+                Identify and resolve blockers to keep the close on track
+              </p>
+            </motion.div>
             
             {/* Filters */}
-            <div className="flex items-center gap-2 mb-6">
-              {/* Owner Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "gap-2 border-neutral-200 bg-white shadow-none font-normal",
-                      ownerFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
-                    )}
-                  >
-                    <User className="h-3.5 w-3.5 text-neutral-400" />
-                    {ownerFilter ? users.find((u) => u.id === ownerFilter)?.name : "Assignee"}
-                    <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  <DropdownMenuItem onClick={() => setOwnerFilter(null)}>
-                    All assignees
-                  </DropdownMenuItem>
-                  {users.map((user) => (
-                    <DropdownMenuItem
-                      key={user.id}
-                      onClick={() => setOwnerFilter(user.id)}
-                      className={ownerFilter === user.id ? "bg-neutral-100" : ""}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center justify-between gap-4 mb-6"
+            >
+              <div className="flex items-center gap-2">
+                {/* Filter indicator */}
+                {hasActiveFilters && (
+                  <div className="flex items-center gap-1.5 pr-2">
+                    <SlidersHorizontal className="h-3.5 w-3.5 text-neutral-400" />
+                    <span className="text-xs text-neutral-500">
+                      {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
+                    </span>
+                  </div>
+                )}
+                
+                {/* Owner Filter */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "gap-2 border-neutral-200 bg-white shadow-none font-normal h-8",
+                        ownerFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
+                      )}
                     >
-                      {user.name}
+                      <User className="h-3.5 w-3.5 text-neutral-400" />
+                      {ownerFilter ? users.find((u) => u.id === ownerFilter)?.name.split(' ')[0] : "Assignee"}
+                      <ChevronDown className="h-3 w-3 text-neutral-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuItem onClick={() => setOwnerFilter(null)}>
+                      All assignees
                     </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Category Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "gap-2 border-neutral-200 bg-white shadow-none font-normal",
-                      categoryFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
-                    )}
-                  >
-                    <Tag className="h-3.5 w-3.5 text-neutral-400" />
-                    {categoryFilter || "Category"}
-                    <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52">
-                  <DropdownMenuItem onClick={() => setCategoryFilter(null)}>
-                    All categories
-                  </DropdownMenuItem>
-                  {categories.map((cat) => (
-                    <DropdownMenuItem
-                      key={cat}
-                      onClick={() => setCategoryFilter(cat)}
-                      className={categoryFilter === cat ? "bg-neutral-100" : ""}
+                    {users.map((user) => (
+                      <DropdownMenuItem
+                        key={user.id}
+                        onClick={() => setOwnerFilter(user.id)}
+                        className={ownerFilter === user.id ? "bg-neutral-100" : ""}
+                      >
+                        {user.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {/* Category Filter */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "gap-2 border-neutral-200 bg-white shadow-none font-normal h-8",
+                        categoryFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
+                      )}
                     >
-                      {cat}
+                      <Tag className="h-3.5 w-3.5 text-neutral-400" />
+                      {categoryFilter ? categoryFilter.split(' ')[0] : "Category"}
+                      <ChevronDown className="h-3 w-3 text-neutral-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-52">
+                    <DropdownMenuItem onClick={() => setCategoryFilter(null)}>
+                      All categories
                     </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Entity Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "gap-2 border-neutral-200 bg-white shadow-none font-normal",
-                      entityFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
-                    )}
-                  >
-                    <Building2 className="h-3.5 w-3.5 text-neutral-400" />
-                    {entityFilter || "Entity"}
-                    <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  <DropdownMenuItem onClick={() => setEntityFilter(null)}>
-                    All entities
-                  </DropdownMenuItem>
-                  {uniqueEntities.map((entityCode) => (
-                    <DropdownMenuItem
-                      key={entityCode}
-                      onClick={() => setEntityFilter(entityCode)}
-                      className={entityFilter === entityCode ? "bg-neutral-100" : ""}
+                    {categories.map((cat) => (
+                      <DropdownMenuItem
+                        key={cat}
+                        onClick={() => setCategoryFilter(cat)}
+                        className={categoryFilter === cat ? "bg-neutral-100" : ""}
+                      >
+                        {cat}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {/* Entity Filter */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "gap-2 border-neutral-200 bg-white shadow-none font-normal h-8",
+                        entityFilter ? "border-neutral-400 bg-neutral-50" : "text-neutral-600 hover:bg-neutral-50"
+                      )}
                     >
-                      <Badge className={cn("mr-2 border-0 px-1.5 py-0 text-[10px]", entities[entityCode]?.color)}>
-                        {entityCode}
-                      </Badge>
-                      {entities[entityCode]?.name}
+                      <Building2 className="h-3.5 w-3.5 text-neutral-400" />
+                      {entityFilter || "Entity"}
+                      <ChevronDown className="h-3 w-3 text-neutral-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuItem onClick={() => setEntityFilter(null)}>
+                      All entities
                     </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Clear filters */}
-              {hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="gap-1.5 text-neutral-500 hover:text-neutral-700"
-                >
-                  <X className="h-3.5 w-3.5" />
-                  Clear
-                </Button>
-              )}
-            </div>
+                    {uniqueEntities.map((entityCode) => (
+                      <DropdownMenuItem
+                        key={entityCode}
+                        onClick={() => setEntityFilter(entityCode)}
+                        className={entityFilter === entityCode ? "bg-neutral-100" : ""}
+                      >
+                        <Badge className={cn("mr-2 border-0 px-1.5 py-0 text-[10px]", entities[entityCode]?.dotColor)}>
+                          {entityCode}
+                        </Badge>
+                        {entities[entityCode]?.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {/* Clear filters */}
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="gap-1.5 text-neutral-500 hover:text-neutral-700 h-8"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </motion.div>
             
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* Left Column - Bottlenecks */}
-              <div className="lg:col-span-3 space-y-4">
+              <motion.div 
+                initial={{ opacity: 0.5, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="lg:col-span-3 space-y-4"
+              >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-medium text-neutral-900">Bottlenecks</h2>
-                  <span className="text-xs text-neutral-400">
-                    By time impact
-                  </span>
+                  <h2 className="text-base font-semibold text-neutral-900">Bottlenecks</h2>
                 </div>
-                <BottleneckList 
+                <EnhancedBottleneckList 
                   bottlenecks={filteredBottlenecks}
                   onSelectBottleneck={handleSelectBottleneck}
                 />
-              </div>
+              </motion.div>
               
               {/* Right Column - Critical Path */}
-              <div className="lg:col-span-2 space-y-4">
-                <h2 className="text-base font-medium text-neutral-900">Critical Path</h2>
+              <motion.div 
+                initial={{ opacity: 0.5, x: 4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
+                className="lg:col-span-2 space-y-4"
+              >
+                <h2 className="text-base font-semibold text-neutral-900">Critical Path</h2>
                 <div className="rounded-xl border border-neutral-200 bg-white p-5">
-                  <CriticalPathView 
+                  <EnhancedCriticalPath 
                     criticalPath={filteredCriticalPath}
                     onSelectNode={handleSelectNode}
                   />
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </main>
