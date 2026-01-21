@@ -237,9 +237,9 @@ const itemVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      type: "tween",
+      type: "tween" as const,
       duration: 0.1,
-      ease: "easeOut",
+      ease: "easeOut" as const,
       delay: index * 0.015,
     }
   }),
@@ -283,7 +283,7 @@ const bgVariants = {
 const bgTransition = {
   type: "tween" as const,
   duration: 0.15,
-  ease: "easeOut"
+  ease: "easeOut" as const
 }
 
 function CriticalPathItem({ 
