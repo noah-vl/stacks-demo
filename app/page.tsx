@@ -362,7 +362,7 @@ export default function Home() {
                         <AvatarImage src={item.image} alt={item.name} />
                       ) : null}
                       <AvatarFallback className={`text-[10px] font-medium ${item.color} ${item.textColor}`}>
-                        {item.initials || item.name
+                        {item.name
                           .split(" ")
                           .map((part) => part[0])
                           .slice(0, 2)
